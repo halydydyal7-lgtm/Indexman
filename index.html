@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>IndexMan Bot | مینی‌اپ حرفه‌ای</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            transition: background 0.25s, color 0.2s, border 0.2s, box-shadow 0.2s;
+        }
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 0 0 70px 0;
+        }
+        :root {
+            --bg-body: #f0f6ff;
+            --bg-card: rgba(255, 255, 255, 0.75);
+            --bg-card-solid: #ffffff;
+            --bg-nav: #0b1628;
+            --bg-sidebar: #0b1628;
+            --text-main: #0b1a33;
+            --text-light: #2c3e66;
+            --text-white: #f0f7ff;
+            --border-light: #dce5f2;
+            --shadow: 0 12px 40px rgba(0, 20, 50, 0.08);
+            --shadow-hover: 0 20px 50px rgba(0, 30, 80, 0.15);
+            --accent: #2a6df4;
+            --accent-hover: #1a56d4;
+            --radius: 28px;
+            --glass: rgba(255, 255, 255, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        [data-theme="emerald"] {
+            --bg-body: #ecfdf5;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-solid: #ffffff;
+            --bg-nav: #064e3b;
+            --bg-sidebar: #064e3b;
+            --text-main: #022c22;
+            --text-light: #065f46;
+            --border-light: #a7f3d0;
+            --shadow: 0 12px 40px rgba(6, 78, 59, 0.1);
+            --shadow-hover: 0 20px 50px rgba(6, 78, 59, 0.2);
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        [data-theme="purple"] {
+            --bg-body: #f5f3ff;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-solid: #ffffff;
+            --bg-nav: #4c1d95;
+            --bg-sidebar: #4c1d95;
+            --text-main: #2e1065;
+            --text-light: #5b21b6;
+            --border-light: #ddd6fe;
+            --shadow: 0 12px 40px rgba(76, 29, 149, 0.1);
+            --shadow-hover: 0 20px 50px rgba(76, 29, 149, 0.2);
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        [data-theme="gold"] {
+            --bg-body: #fffbeb;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card-solid: #ffffff;
+            --bg-nav: #78350f;
+            --bg-sidebar: #78350f;
+            --text-main: #451a03;
+            --text-light: #92400e;
+            --border-light: #fde68a;
+            --shadow: 0 12px 40px rgba(120, 53, 15, 0.1);
+            --shadow-hover: 0 20px 50px rgba(120, 53, 15, 0.2);
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+        a {
+            text-decoration: none;
+            color: var(--accent);
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            background: var(--bg-nav);
+            color: var(--text-white);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        .navbar .brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .navbar .brand i {
+            color: #facc15;
+        }
+        .navbar .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar .actions button {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .navbar .actions button:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+        .hamburger {
+            font-size: 1.6rem;
+            cursor: pointer;
+            color: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: var(--bg-sidebar);
+            color: var(--text-white);
+            padding: 28px 20px;
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.6);
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1100;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .sidebar.open {
+            right: 0;
+        }
+        .sidebar .close-btn {
+            text-align: left;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .sidebar .close-btn:hover {
+            color: white;
+        }
+        .sidebar .profile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 24px;
+        }
+        .sidebar .profile img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px solid #facc15;
+            object-fit: cover;
+        }
+        .sidebar .profile .info h4 {
+            font-size: 1rem;
+        }
+        .sidebar .profile .info span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 6px 0;
+        }
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            color: #cbd5e1;
+            font-weight: 500;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+        .sidebar ul li a i {
+            width: 22px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background: rgba(42, 109, 244, 0.15);
+            color: white;
+        }
+        .sidebar ul li a.active {
+            background: var(--accent);
+            color: white;
+        }
+        .badge-soon {
+            background: #facc15;
+            color: #0f172a;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 1050;
+            display: none;
+            backdrop-filter: blur(3px);
+        }
+        .overlay.show {
+            display: block;
+        }
+
+        /* ===== MAIN ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+        .page {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== GLASS CARD ===== */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            transition: 0.3s;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card p {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+            display: grid;
+            gap: 20px;
+        }
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .grid-4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        /* ===== STAT BOX ===== */
+        .stat-box {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 18px 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+        .stat-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            direction: ltr;
+        }
+        .stat-box .label {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.25s;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(42, 109, 244, 0.25);
+        }
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 28px rgba(42, 109, 244, 0.35);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 28px rgba(42, 109, 244, 0.25);
+        }
+        .btn-success {
+            background: #22c55e;
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+        }
+        .btn-success:hover {
+            background: #16a34a;
+            box-shadow: 0 8px 28px rgba(34, 197, 94, 0.4);
+        }
+        .btn-glow {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            border: none;
+            color: white;
+        }
+        .btn-glow:hover {
+            background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+        }
+
+        /* ===== FEATURE TAG ===== */
+        .feature-tag {
+            display: inline-block;
+            background: rgba(42, 109, 244, 0.08);
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            margin: 4px 6px 4px 0;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .feature-tag:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        /* ===== SEARCH ===== */
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 2px solid var(--border-light);
+            border-radius: 60px;
+            padding: 4px 18px;
+            margin: 16px 0 24px;
+            transition: 0.3s;
+        }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 5px rgba(42, 109, 244, 0.12);
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 6px;
+            font-size: 0.95rem;
+            outline: none;
+            color: var(--text-main);
+        }
+        .search-box i {
+            color: var(--text-light);
+        }
+
+        /* ===== GAME CARD ===== */
+        .game-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+        .game-card i {
+            font-size: 2.8rem;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .game-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+        }
+        .game-card p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* ===== CHANNEL CARD ===== */
+        .channel-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-card));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            backdrop-filter: blur(8px);
+        }
+        .channel-card .info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .channel-card .info i {
+            font-size: 2rem;
+            color: #facc15;
+        }
+        .channel-card .info h4 {
+            font-size: 1.1rem;
+        }
+        .channel-card .info span {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* ===== LIVE TV (به‌زودی) ===== */
+        .coming-soon {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 2px dashed var(--accent);
+        }
+        .coming-soon i {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        .coming-soon h3 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .coming-soon p {
+            color: var(--text-light);
+        }
+
+        /* ===== MOVIE ===== */
+        .episode-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .episode-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .episode-item:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.02);
+        }
+        .episode-item i {
+            font-size: 1.2rem;
+        }
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: 16px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+            max-height: 500px;
+            background: #000;
+        }
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .video-wrapper:hover .video-controls {
+            opacity: 1;
+        }
+        .video-controls .info {
+            color: white;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .video-controls .info span {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+        .video-controls .buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .video-controls .buttons button {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .video-controls .buttons button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .video-controls .buttons button.skip {
+            background: rgba(251, 191, 36, 0.3);
+            border: 1px solid #fbbf24;
+        }
+        .video-controls .buttons button.skip:hover {
+            background: rgba(251, 191, 36, 0.5);
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-item .q {
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item .q i {
+            transition: 0.3s;
+        }
+        .faq-item .q.open i {
+            transform: rotate(180deg);
+        }
+        .faq-item .a {
+            display: none;
+            padding-top: 8px;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        .faq-item .a.show {
+            display: block;
+        }
+
+        /* ===== FEATURE DETAIL ===== */
+        .feature-detail {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-top: 8px;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        .feature-detail.show {
+            display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 16px;
+            }
+            .card {
+                padding: 18px;
+            }
+            .sidebar {
+                width: 270px;
+                right: -280px;
+            }
+            .episode-list {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 10px 10px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-light);
+            margin-top: 30px;
+        }
+        .mt-2 {
+            margin-top: 16px;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        code {
+            background: var(--bg-body);
+            padding: 2px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-light);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></div>
+        <div class="profile">
+            <img src="https://uploadkon.ir/uploads/120f29_26IMG-20260628-235247.jpg" alt="IndexMan" />
+            <div class="info">
+                <h4>ایندکس من</h4>
+                <span>@Indexmanbot</span>
+            </div>
+        </div>
+        <ul>
+            <li><a href="#" data-page="home" class="active"><i class="fas fa-home"></i> خانه</a></li>
+            <li><a href="#" data-page="features"><i class="fas fa-cogs"></i> امکانات</a></li>
+            <li><a href="#" data-page="games"><i class="fas fa-gamepad"></i> بازی‌ها</a></li>
+            <li><a href="#" data-page="currency"><i class="fas fa-coins"></i> قیمت ارز</a></li>
+            <li><a href="#" data-page="tutorial"><i class="fas fa-graduation-cap"></i> آموزش</a></li>
+            <li><a href="#" data-page="live"><i class="fas fa-broadcast-tower"></i> پخش زنده</a></li>
+            <li><a href="#" data-page="movies"><i class="fas fa-film"></i> فیلم و سریال</a></li>
+            <li><a href="#" data-page="faq"><i class="fas fa-question-circle"></i> سوالات متداول</a></li>
+            <li><a href="#" data-page="news"><i class="fas fa-newspaper"></i> اخبار</a></li>
+            <li><a href="#" data-page="about"><i class="fas fa-info-circle"></i> درباره ما</a></li>
+            <li><a href="#" data-page="contact"><i class="fas fa-headset"></i> پشتیبانی</a></li>
+        </ul>
+        <div style="margin-top:30px; border-top:1px solid #334155; padding-top:20px;">
+            <a href="https://ble.ir/join/4LPHdk7sR5" target="_blank" class="btn btn-success" style="width:100%; justify-content:center; border-radius:40px;">
+                <i class="fas fa-plus-circle"></i> افزودن ربات به گروه
+            </a>
+        </div>
+    </aside>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="brand"><i class="fas fa-robot"></i><span>IndexMan</span></div>
+        <div class="actions">
+            <button id="themeToggle"><i class="fas fa-palette"></i></button>
+            <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <!-- ===== HOME ===== -->
+        <section class="page active" id="page-home">
+            <div class="card" style="text-align:center; padding:40px 20px;">
+                <img src="https://uploadkon.ir/uploads/543a29_26IMG-20260629-024346.jpg" alt="IndexMan" style="max-width:170px; border-radius:50%; border:4px solid var(--accent); margin-bottom:14px;" />
+                <h1 style="font-size:2.2rem;">🤖 ربات ایندکس من</h1>
+                <p style="font-size:1.1rem; max-width:600px; margin:10px auto;">برترین ابزار مدیریت گروه در تلگرام و بله</p>
+                <div style="display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:20px;">
+                    <a href="https://ble.ir/join/4LPHdk7sR5" target="_blank" class="btn btn-success"><i class="fas fa-plus"></i> افزودن به گروه</a>
+                    <a href="#page-features" class="btn btn-outline" onclick="showPage('features')">مشاهده امکانات</a>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="جستجو در امکانات، بازی‌ها، آموزش ..." id="globalSearch" />
+            </div>
+
+            <div class="grid-4">
+                <div class="stat-box"><div class="number" id="likesCount">45,200</div><div class="label"><i class="fas fa-heart" style="color:#ef4444;"></i> لایک</div></div>
+                <div class="stat-box"><div class="number" id="viewsCount">17,450</div><div class="label"><i class="fas fa-eye"></i> بازدید روزانه</div></div>
+                <div class="stat-box"><div class="number" id="groupsCount">52,480</div><div class="label"><i class="fas fa-users"></i> گروه‌های عضو</div></div>
+                <div class="stat-box"><div class="number" id="usersCount">634</div><div class="label"><i class="fas fa-user-check"></i> کاربران آنلاین</div></div>
+            </div>
+
+            <div class="card" style="margin-top:8px;">
+                <div class="channel-card">
+                    <div class="info">
+                        <i class="fas fa-bullhorn"></i>
+                        <div><h4>کانال رسمی ایندکس</h4><span>اخبار، بروزرسانی‌ها و لینکدونی</span></div>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <a href="https://ble.ir/join/2NRwLCrhMN" target="_blank" class="btn btn-glow" style="padding:8px 20px; font-size:0.85rem;"><i class="fas fa-bell"></i> عضویت</a>
+                        <a href="https://ble.ir/join/4LPHdk7sR5" target="_blank" class="btn btn-outline" style="padding:8px 20px; font-size:0.85rem;"><i class="fas fa-link"></i> لینکدونی</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top:8px;">
+                <div class="game-card" onclick="showPage('games')" style="cursor:pointer;">
+                    <i class="fas fa-bomb"></i>
+                    <h4>💣 مین‌روب</h4>
+                    <p>بازی حدس و حافظه</p>
+                </div>
+                <div class="game-card" onclick="showPage('games')" style="cursor:pointer;">
+                    <i class="fas fa-coins"></i>
+                    <h4>🎰 اسلات</h4>
+                    <p>چرخش و شانس</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FEATURES ===== -->
+        <section class="page" id="page-features">
+            <div class="card">
+                <h2><i class="fas fa-cogs" style="color:var(--accent);"></i> امکانات کامل ربات</h2>
+                <p>روی هر گزینه کلیک کنید تا توضیحات و آموزش آن نمایش داده شود.</p>
+                <div class="flex-wrap gap-2 mt-2">
+                    <span class="feature-tag" onclick="toggleFeature('f-security')">🔒 امنیت مشکوک</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-antispam')">🛡️ ضد اسپم</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-antilink')">🔗 ضد لینک</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-ban')">👑 مدیریت کاربران</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-clear')">🗑️ حذف گروهی</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-lock')">🔐 قفل گروه</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-stats')">📊 آمار و سطح</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-games')">🎮 بازی‌ها</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-currency')">💰 قیمت ارز</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-pin')">📌 پین پیام</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-eco')">🔄 اکو</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-slow')">🐢 حالت آهسته</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-title')">🏷️ لقب‌دهی</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-master')">👑 اساتید گروه</span>
+                    <span class="feature-tag" onclick="toggleFeature('f-attack')">⚔️ حمله کن</span>
+                </div>
+                <div id="f-security" class="feature-detail"><strong>🔒 سیستم امنیتی مشکوک</strong><p>ربات به‌محض دریافت پیام، فرستنده را بررسی می‌کند. در صورت مشکوک بودن، پیام پاک و کاربر بن می‌شود و هشدار عمومی داده می‌شود.</p><code>فعال‌سازی: خودکار</code></div>
+                <div id="f-antispam" class="feature-detail"><strong>🛡️ ضد اسپم هوشمند</strong><p>آستانه ۵ پیام در ۲ ثانیه. در صورت اسپم، کاربر ۱ ساعت سکوت می‌شود.</p><code>دستور: ضد اسپم فعال / غیرفعال</code></div>
+                <div id="f-antilink" class="feature-detail"><strong>🔗 ضد لینک پیشرفته</strong><p>لینک‌های غیرمجاز را شناسایی و پاک می‌کند.</p><code>دستور: ضدلینک فعال / غیرفعال</code></div>
+                <div id="f-ban" class="feature-detail"><strong>👑 مدیریت کاربران با @</strong><p>همه دستورات با یوزرنیم قابل اجرا هستند.</p><code>مثال: بن @username</code></div>
+                <div id="f-clear" class="feature-detail"><strong>🗑️ حذف گروهی پیام</strong><p>با دستور <code>حذف ۲۰</code> تعداد مشخصی پیام پاک می‌شود.</p><code>دستور: حذف [تعداد]</code></div>
+                <div id="f-lock" class="feature-detail"><strong>🔐 قفل گروه با تایمر</strong><p>قفل گروه به مدت ۱، ۶ یا ۲۴ ساعت.</p><code>دستور: قفل 6</code></div>
+                <div id="f-stats" class="feature-detail"><strong>📊 آمارگیری و امتیازدهی</strong><p>هر پیام ۱ امتیاز، هر ۱۰۰ امتیاز ۱ سطح جدید.</p><code>دستور: آمار</code></div>
+                <div id="f-games" class="feature-detail"><strong>🎮 بازی‌های سرگرمی</strong><p>بلک‌جک، اسلات، مین‌روب، دوز و حمله کن.</p><code>دستور: بلک جک / اسلات / مین روب / دوز / حمله کن</code></div>
+                <div id="f-currency" class="feature-detail"><strong>💰 قیمت لحظه‌ای ارز</strong><p>دریافت قیمت دلار، یورو، درهم و پوند از API BrsApi.ir.</p><code>دستور: ارز</code></div>
+                <div id="f-pin" class="feature-detail"><strong>📌 پین کردن پیام</strong><p>روی پیام ریپلی بزنید و <code>پین</code> را ارسال کنید.</p><code>دستور: پین (ریپلی)</code></div>
+                <div id="f-eco" class="feature-detail"><strong>🔄 اکو (تکرار پیام)</strong><p>ربات پیام شما را تکرار می‌کند.</p><code>دستور: اکو</code></div>
+                <div id="f-slow" class="feature-detail"><strong>🐢 حالت آهسته (Slow Mode)</strong><p>فاصله زمانی بین پیام‌ها را تنظیم می‌کند.</p><code>دستور: آهسته [ثانیه]</code></div>
+                <div id="f-title" class="feature-detail"><strong>🏷️ لقب‌دهی به اعضا</strong><p>به کاربران لقب اختصاصی بدهید.</p><code>دستور: لقب @username [متن]</code></div>
+                <div id="f-master" class="feature-detail"><strong>👑 سیستم اساتید گروه</strong><p>کاربران خاص با دسترسی‌های ویژه.</p><code>دستور: استاد [@username]</code></div>
+                <div id="f-attack" class="feature-detail"><strong>⚔️ حمله کن (شوخی گروهی)</strong><p>یک حمله شوخی به کاربر مورد نظر انجام می‌دهد.</p><code>دستور: حمله کن @username</code></div>
+            </div>
+        </section>
+
+        <!-- ===== GAMES ===== -->
+        <section class="page" id="page-games">
+            <div class="card"><h2><i class="fas fa-gamepad" style="color:#facc15;"></i> بازی‌های مینی‌اپ</h2><p>بازی‌های واقعی و تعاملی</p></div>
+            <div class="grid-2">
+                <div class="game-card"><i class="fas fa-bomb" style="color:#ef4444;"></i><h4>💣 مین‌روب</h4><p>تعداد مین‌ها را حدس بزنید!</p><button class="btn btn-glow" style="margin-top:12px; padding:8px 20px;" onclick="playMine()">شروع بازی</button><div id="mineResult" style="margin-top:10px; font-weight:bold; color:var(--accent);"></div></div>
+                <div class="game-card"><i class="fas fa-coins" style="color:#facc15;"></i><h4>🎰 اسلات</h4><p>چرخش و شانس خود را امتحان کنید</p><button class="btn btn-glow" style="margin-top:12px; padding:8px 20px;" onclick="playSlot()">چرخش</button><div id="slotResult" style="margin-top:10px; font-weight:bold; color:var(--accent);"></div></div>
+            </div>
+            <div class="game-card" style="margin-top:16px;"><i class="fas fa-cards" style="color:#f59e0b;"></i><h4>🃏 بلک‌جک</h4><p>بازی با ربات</p><button class="btn btn-glow" style="padding:8px 20px;" onclick="playBlackjack()">شروع بلک‌جک</button><div id="bjResult" style="margin-top:10px; font-weight:bold; color:var(--accent);"></div></div>
+        </section>
+
+        <!-- ===== CURRENCY (با API BrsApi.ir) ===== -->
+        <section class="page" id="page-currency">
+            <div class="card">
+                <h2><i class="fas fa-dollar-sign" style="color:#22c55e;"></i> قیمت لحظه‌ای ارز</h2>
+                <p>قیمت‌ها از API BrsApi.ir دریافت می‌شوند.</p>
+                <div class="grid-4" id="currencyGrid">
+                    <div class="stat-box"><div class="number" id="usdPrice">---</div><div class="label">🇺🇸 دلار</div></div>
+                    <div class="stat-box"><div class="number" id="eurPrice">---</div><div class="label">🇪🇺 یورو</div></div>
+                    <div class="stat-box"><div class="number" id="aedPrice">---</div><div class="label">🇦🇪 درهم</div></div>
+                    <div class="stat-box"><div class="number" id="gbpPrice">---</div><div class="label">🇬🇧 پوند</div></div>
+                </div>
+                <button class="btn btn-outline" onclick="fetchCurrency()" style="margin-top:12px;"><i class="fas fa-sync"></i> بروزرسانی</button>
+                <p style="font-size:0.8rem; color:var(--text-light); margin-top:8px;">🕐 آخرین بروزرسانی: <span id="currencyTime">در حال دریافت...</span></p>
+            </div>
+        </section>
+
+        <!-- ===== TUTORIAL ===== -->
+        <section class="page" id="page-tutorial">
+            <div class="card">
+                <h2><i class="fas fa-graduation-cap"></i> آموزش کامل</h2>
+                <p>همه دستورات و نحوه استفاده از ربات</p>
+                <div style="background:var(--bg-body); border-radius:16px; padding:16px; margin-top:12px; border:1px solid var(--border-light);">
+                    <code style="display:block; padding:4px 0;">📌 پین پیام → ریپلی + پین</code>
+                    <code style="display:block; padding:4px 0;">🗑️ حذف گروهی → ریپلی + حذف 20</code>
+                    <code style="display:block; padding:4px 0;">🔒 قفل گروه → قفل 6 (۶ ساعت)</code>
+                    <code style="display:block; padding:4px 0;">🔓 باز کردن قفل → حذف قفل</code>
+                    <code style="display:block; padding:4px 0;">🚫 ضد اسپم → ضد اسپم فعال</code>
+                    <code style="display:block; padding:4px 0;">🔗 ضد لینک → ضدلینک فعال</code>
+                    <code style="display:block; padding:4px 0;">💰 قیمت ارز → ارز</code>
+                    <code style="display:block; padding:4px 0;">👤 بن کاربر → بن @username</code>
+                    <code style="display:block; padding:4px 0;">🔇 سکوت → سکوت @username</code>
+                    <code style="display:block; padding:4px 0;">⚠️ اخطار → اخطار @username</code>
+                    <code style="display:block; padding:4px 0;">⚔️ حمله کن → حمله کن @username</code>
+                    <code style="display:block; padding:4px 0;">🔄 اکو → اکو</code>
+                    <code style="display:block; padding:4px 0;">🐢 حالت آهسته → آهسته 5</code>
+                    <code style="display:block; padding:4px 0;">🏷️ لقب → لقب @username متن</code>
+                </div>
+                <p class="mt-2">📌 برای مشاهده تمام دستورات، <code>راهنما</code> را به ربات ارسال کنید.</p>
+            </div>
+        </section>
+
+        <!-- ===== LIVE TV (به‌زودی) ===== -->
+        <section class="page" id="page-live">
+            <div class="card">
+                <h2><i class="fas fa-broadcast-tower" style="color:#ef4444;"></i> پخش زنده شبکه‌های ایران</h2>
+                <div class="coming-soon">
+                    <i class="fas fa-clock"></i>
+                    <h3>به‌زودی</h3>
+                    <p>قابلیت پخش زنده شبکه‌های تلویزیونی به‌زودی به این بخش اضافه می‌شود.</p>
+                    <span class="badge-soon" style="font-size:0.9rem; padding:6px 20px; display:inline-block; margin-top:12px;">در حال توسعه</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== MOVIES (سریال پایتخت کامل) ===== -->
+        <section class="page" id="page-movies">
+            <div class="card">
+                <h2><i class="fas fa-film" style="color:#facc15;"></i> سریال پایتخت</h2>
+                <p>همه فصل‌ها و قسمت‌ها — روی هر قسمت کلیک کنید تا پخش شود.</p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                    <button class="btn btn-outline" onclick="loadEpisodes(1)" style="padding:6px 16px; font-size:0.8rem;">فصل ۱</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(2)" style="padding:6px 16px; font-size:0.8rem;">فصل ۲</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(3)" style="padding:6px 16px; font-size:0.8rem;">فصل ۳</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(4)" style="padding:6px 16px; font-size:0.8rem;">فصل ۴</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(5)" style="padding:6px 16px; font-size:0.8rem;">فصل ۵</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(6)" style="padding:6px 16px; font-size:0.8rem;">فصل ۶</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes(7)" style="padding:6px 16px; font-size:0.8rem;">فصل ۷</button>
+                    <button class="btn btn-outline" onclick="loadEpisodes('special')" style="padding:6px 16px; font-size:0.8rem;">ویژه</button>
+                </div>
+                <div class="episode-list" id="episodeList"></div>
+                <div class="video-wrapper" id="videoWrapper" style="display:none;">
+                    <video id="moviePlayer" controls></video>
+                    <div class="video-controls">
+                        <div class="info"><span id="seasonLabel">فصل ۱</span><span id="episodeLabel">قسمت ۱</span></div>
+                        <div class="buttons">
+                            <button onclick="skipIntro()" class="skip">⏭ رد تیتراژ</button>
+                            <button onclick="nextEpisode()">قسمت بعدی ➜</button>
+                        </div>
+                    </div>
+                </div>
+                <p style="color:var(--text-light); font-size:0.85rem; margin-top:12px;">⚠️ سایر فیلم‌ها و سریال‌ها به‌زودی اضافه می‌شوند.</p>
+            </div>
+        </section>
+
+        <!-- ===== FAQ ===== -->
+        <section class="page" id="page-faq">
+            <div class="card">
+                <h2><i class="fas fa-question-circle" style="color:#f59e0b;"></i> سوالات متداول</h2>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">چگونه ربات را به گروه اضافه کنم؟ <i class="fas fa-chevron-down"></i></div><div class="a">از طریق دکمه «افزودن ربات به گروه» در منو یا لینک <code>https://ble.ir/join/4LPHdk7sR5</code> اقدام کنید. ربات باید ادمین گروه باشد.</div></div>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">آیا ربات رایگان است؟ <i class="fas fa-chevron-down"></i></div><div class="a">بله، تمامی امکانات ربات به‌صورت کاملاً رایگان در دسترس است.</div></div>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">چگونه قفل گروه را تنظیم کنم؟ <i class="fas fa-chevron-down"></i></div><div class="a">دستور <code>قفل 6</code> برای ۶ ساعت، <code>قفل 24</code> برای ۲۴ ساعت. برای باز کردن <code>حذف قفل</code> یا <code>بازکردن</code>.</div></div>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">ضد اسپم چگونه کار می‌کند؟ <i class="fas fa-chevron-down"></i></div><div class="a">اگر کاربری ۵ پیام در ۲ ثانیه ارسال کند، ۱ ساعت سکوت می‌شود و پیام‌هایش پاک می‌گردد.</div></div>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">چگونه کاربر را بن کنم؟ <i class="fas fa-chevron-down"></i></div><div class="a">با دستور <code>بن @username</code>. برای رفع بن <code>حذف بن</code> یا <code>رفع بن</code>.</div></div>
+                <div class="faq-item"><div class="q" onclick="toggleFAQ(this)">آیا ربات به API قیمت ارز متصل است؟ <i class="fas fa-chevron-down"></i></div><div class="a">بله، از API BrsApi.ir برای دریافت قیمت لحظه‌ای دلار، یورو، درهم و پوند استفاده می‌کند.</div></div>
+            </div>
+        </section>
+
+        <!-- ===== NEWS ===== -->
+        <section class="page" id="page-news">
+            <div class="card">
+                <h2><i class="fas fa-newspaper"></i> اخبار و اطلاعیه‌ها</h2>
+                <div style="border-right:4px solid var(--accent); padding-right:16px; margin-bottom:22px;"><h3>📢 نسخه ۲ رونمایی شد!</h3><p>سیستم امنیتی پیشرفته، ضد اسپم حرفه‌ای و بازی‌های جذاب.</p><small style="color:var(--text-light);">۲۹ خرداد ۱۴۰۵</small></div>
+                <div style="border-right:4px solid #facc15; padding-right:16px; margin-bottom:22px;"><h3>🎮 بازی‌های جدید اضافه شدند</h3><p>مین‌روب، دوز و حمله کن به مجموعه بازی‌ها اضافه شدند.</p><small style="color:var(--text-light);">۲۵ خرداد ۱۴۰۵</small></div>
+                <div style="border-right:4px solid #22c55e; padding-right:16px;"><h3>📈 آمارگیری هوشمند فعال شد</h3><p>هر پیام ۱ امتیاز، هر ۱۰۰ امتیاز ۱ سطح جدید.</p><small style="color:var(--text-light);">۲۰ خرداد ۱۴۰۵</small></div>
+            </div>
+        </section>
+
+        <!-- ===== ABOUT ===== -->
+        <section class="page" id="page-about">
+            <div class="card">
+                <h2><i class="fas fa-users-cog"></i> درباره ما</h2>
+                <p>ربات IndexMan توسط تیم حرفه‌ای طراحی و توسعه یافته است.</p>
+                <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:18px;">
+                    <div><i class="fas fa-user-tie"></i> <strong>سازنده:</strong> @TOKA_apv</div>
+                    <div><i class="fas fa-code"></i> <strong>توسعه‌دهنده:</strong> @ar3973fa</div>
+                    <div><i class="fas fa-headset"></i> <strong>پشتیبانی:</strong> @PRALI</div>
+                </div>
+                <div style="margin-top:20px; display:flex; flex-wrap:wrap; gap:14px;">
+                    <a href="https://ble.ir/Indexmanbot?start" target="_blank" class="btn"><i class="fas fa-robot"></i> ربات</a>
+                    <a href="https://ble.ir/join/2NRwLCrhMN" target="_blank" class="btn btn-outline"><i class="fas fa-bell"></i> کانال</a>
+                    <a href="https://ble.ir/join/9McuNFeeqy" target="_blank" class="btn btn-outline"><i class="fas fa-users"></i> گروه</a>
+                </div>
+                <div class="grid-2 mt-2">
+                    <img src="https://uploadkon.ir/uploads/b9fa29_26IMG-20260629-022614.jpg" alt="لینکدونی" style="width:100%; border-radius:20px; border:1px solid var(--border-light);" />
+                    <img src="https://uploadkon.ir/uploads/07a129_26IMG-20260422-133223.jpg" alt="گروه ایندکس" style="width:100%; border-radius:20px; border:1px solid var(--border-light);" />
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section class="page" id="page-contact">
+            <div class="card">
+                <h2><i class="fas fa-headset"></i> پشتیبانی</h2>
+                <p>برای راهنمایی، گزارش خطا یا پیشنهادات، از طریق گروه یا کانال با ما در ارتباط باشید.</p>
+                <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:16px;">
+                    <a href="https://ble.ir/join/9McuNFeeqy" target="_blank" class="btn btn-outline"><i class="fas fa-comments"></i> گروه پشتیبانی</a>
+                    <a href="https://ble.ir/join/2NRwLCrhMN" target="_blank" class="btn btn-outline"><i class="fas fa-bell"></i> کانال اطلاع‌رسانی</a>
+                </div>
+                <p class="mt-2">📌 همچنین می‌توانید از ربات دستور <code>راهنما</code> را دریافت کنید.</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>© ۱۴۰۵ تمامی حقوق متعلق به <strong>IndexMan</strong> است.</p>
+            <p style="margin-top:4px;">
+                <a href="https://ble.ir/Indexmanbot?start" target="_blank">ربات</a> ·
+                <a href="https://ble.ir/join/2NRwLCrhMN" target="_blank">کانال</a> ·
+                <a href="https://ble.ir/join/9McuNFeeqy" target="_blank">گروه</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        (function() {
+            // ===== SIDEBAR =====
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const hamburger = document.getElementById('hamburger');
+            const closeSidebar = document.getElementById('closeSidebar');
+            const themeToggle = document.getElementById('themeToggle');
+
+            function openSidebar() { sidebar.classList.add('open');
+                overlay.classList.add('show'); }
+
+            function closeSidebarFn() { sidebar.classList.remove('open');
+                overlay.classList.remove('show'); }
+            hamburger.addEventListener('click', openSidebar);
+            closeSidebar.addEventListener('click', closeSidebarFn);
+            overlay.addEventListener('click', closeSidebarFn);
+
+            // ===== PAGE NAV =====
+            const pages = document.querySelectorAll('.page');
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+            window.showPage = function(pageId) {
+                pages.forEach(p => p.classList.remove('active'));
+                const target = document.getElementById('page-' + pageId);
+                if (target) target.classList.add('active');
+                sidebarLinks.forEach(link => link.classList.remove('active'));
+                const activeLink = document.querySelector(`.sidebar ul li a[data-page="${pageId}"]`);
+                if (activeLink) activeLink.classList.add('active');
+                if (window.innerWidth <= 768) closeSidebarFn();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    if (page) window.showPage(page);
+                });
+            });
+
+            // ===== THEME =====
+            let currentTheme = localStorage.getItem('theme') || 'default';
+            const themes = ['default', 'emerald', 'purple', 'gold'];
+
+            function applyTheme(theme) {
+                document.documentElement.removeAttribute('data-theme');
+                if (theme !== 'default') document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                currentTheme = theme;
+            }
+            let themeIndex = 0;
+            themeToggle.addEventListener('click', function() {
+                themeIndex = (themeIndex + 1) % themes.length;
+                applyTheme(themes[themeIndex]);
+                const icons = ['🎨', '💚', '💜', '🌟'];
+                this.innerHTML = icons[themeIndex];
+            });
+            const savedTheme = localStorage.getItem('theme') || 'default';
+            const idx = themes.indexOf(savedTheme);
+            if (idx > 0) { applyTheme(savedTheme);
+                themeToggle.innerHTML = ['🎨', '💚', '💜', '🌟'][idx]; }
+
+            // ===== STATS =====
+            function updateStats() {
+                const base = { likes: 45200, views: 17450, groups: 52480, online: 634 };
+                const r = (n) => n + Math.floor(Math.random() * 30);
+                const vals = { likes: r(base.likes), views: r(base.views), groups: r(base.groups), online: r(base.online) };
+                const map = { 'likesCount': vals.likes, 'viewsCount': vals.views, 'groupsCount': vals.groups,
+                    'usersCount': vals.online };
+                Object.keys(map).forEach(id => { const el = document.getElementById(id); if (el) el.textContent = map[id]
+                        .toLocaleString(); });
+            }
+            updateStats();
+            setInterval(updateStats, 7000);
+
+            // ===== GAMES =====
+            window.playMine = function() {
+                const mine = Math.floor(Math.random() * 10) + 1;
+                const guess = prompt('💣 یک عدد بین ۱ تا ۱۰ حدس بزنید:', '5');
+                if (guess === null) return;
+                const num = parseInt(guess);
+                if (isNaN(num) || num < 1 || num > 10) { document.getElementById('mineResult').textContent =
+                        '❌ عدد معتبر وارد کنید (۱ تا ۱۰)'; return; }
+                if (num === mine) document.getElementById('mineResult').textContent = '🎉 برنده شدید! مین در ' + mine +
+                    ' بود.';
+                else document.getElementById('mineResult').textContent = '💥 باختی! مین در ' + mine + ' بود.';
+            };
+            window.playSlot = function() {
+                const emojis = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣'];
+                const reels = [emojis[Math.floor(Math.random() * emojis.length)], emojis[Math.floor(Math.random() *
+                    emojis.length)], emojis[Math.floor(Math.random() * emojis.length)]];
+                const result = reels.join(' ');
+                let msg = '🎰 ' + result;
+                if (reels[0] === reels[1] && reels[1] === reels[2]) msg += ' 🎉 جک‌پات!';
+                else if (reels[0] === reels[1] || reels[1] === reels[2] || reels[0] === reels[2]) msg += ' 🔥 نزدیک بود!';
+                document.getElementById('slotResult').textContent = msg;
+            };
+            window.playBlackjack = function() {
+                const player = Math.floor(Math.random() * 10) + 12;
+                const dealer = Math.floor(Math.random() * 10) + 12;
+                let result;
+                if (player > 21 && dealer > 21) result = '🤝 هر دو باختید!';
+                else if (player > 21) result = '💔 شما باختید! (بیشتر از ۲۱)';
+                else if (dealer > 21) result = '🎉 شما برنده شدید! (دیالر باخت)';
+                else if (player > dealer) result = '🎉 شما برنده شدید!';
+                else if (player < dealer) result = '💔 شما باختید!';
+                else result = '🤝 مساوی!';
+                document.getElementById('bjResult').textContent = '🃏 شما: ' + player + ' | دیالر: ' + dealer + ' → ' +
+                    result;
+            };
+
+            // ===== CURRENCY (BrsApi.ir) =====
+            const API_KEY = 'BAdW4qBeBj6cnLqrUlIbtCbtPGTHLXeW';
+
+            window.fetchCurrency = async function() {
+                try {
+                    const url = `https://brsapi.ir/api/currency?api_key=${API_KEY}`;
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                        }
+                    });
+                    if (!response.ok) throw new Error('خطا در دریافت داده');
+                    const data = await response.json();
+
+                    // ساختار پاسخ را فرض می‌کنیم: { usd: 172095, eur: 196370, aed: 46896, gbp: 227750 }
+                    // یا ممکن است داخل data.results یا data.data باشد
+                    // بررسی می‌کنیم
+                    let prices = data;
+                    if (data.results) prices = data.results;
+                    if (data.data) prices = data.data;
+
+                    const usd = prices.usd || prices.USD || prices.dollar;
+                    const eur = prices.eur || prices.EUR || prices.euro;
+                    const aed = prices.aed || prices.AED || prices.dirham;
+                    const gbp = prices.gbp || prices.GBP || prices.pound;
+
+                    if (usd && eur && aed && gbp) {
+                        document.getElementById('usdPrice').textContent = Number(usd).toLocaleString();
+                        document.getElementById('eurPrice').textContent = Number(eur).toLocaleString();
+                        document.getElementById('aedPrice').textContent = Number(aed).toLocaleString();
+                        document.getElementById('gbpPrice').textContent = Number(gbp).toLocaleString();
+                        document.getElementById('currencyTime').textContent = new Date().toLocaleTimeString('fa-IR');
+                    } else {
+                        throw new Error('داده‌های قیمت کامل نیست');
+                    }
+                } catch (error) {
+                    console.error('خطا در دریافت قیمت ارز:', error);
+                    fallbackCurrency();
+                }
+            };
+
+            function fallbackCurrency() {
+                const base = { usd: 172095, eur: 196370, aed: 46896, gbp: 227750 };
+                const random = (n) => n + Math.floor(Math.random() * 200) - 100;
+                document.getElementById('usdPrice').textContent = random(base.usd).toLocaleString();
+                document.getElementById('eurPrice').textContent = random(base.eur).toLocaleString();
+                document.getElementById('aedPrice').textContent = random(base.aed).toLocaleString();
+                document.getElementById('gbpPrice').textContent = random(base.gbp).toLocaleString();
+                document.getElementById('currencyTime').textContent = new Date().toLocaleTimeString('fa-IR') +
+                    ' (آفلاین)';
+            }
+
+            setTimeout(fetchCurrency, 500);
+
+            // ===== MOVIES (سریال پایتخت کامل) =====
+            const episodesData = {
+                1: [
+                    { title: 'قسمت ۱', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S01/Paytakht.S01E08.HDTV.HexDL.com.mkv' }
+                ],
+                2: [
+                    { title: 'قسمت ۱', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E08.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۹', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E09.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۰', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S02/Paytakht.S02E10.HDTV.HexDL.com.mkv' }
+                ],
+                3: [
+                    { title: 'قسمت ۱', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E08.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۹', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E09.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۰', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S03/Paytakht.S03E10.HDTV.HexDL.com.mkv' }
+                ],
+                4: [
+                    { title: 'قسمت ۱', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E08.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۹', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E09.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۰', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S04/Paytakht.S04E10.HDTV.HexDL.com.mkv' }
+                ],
+                5: [
+                    { title: 'قسمت ۱', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E08.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۹', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E09.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۰', url: 'https://dl1.hxdl.ir/hex1/Series/Paytakht/S05/Paytakht.S05E10.HDTV.HexDL.com.mkv' }
+                ],
+                6: [
+                    { title: 'قسمت ۱', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E01.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۲', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E02.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۳', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E03.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۴', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E04.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۵', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E05.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۶', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E06.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۷', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E07.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۸', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E08.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۹', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E09.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۰', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E10.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۱', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E11.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۲', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E12.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۳', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E13.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۴', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E14.HDTV.HexDL.com.mkv' },
+                    { title: 'قسمت ۱۵', url: 'https://dl3.hxdl.ir/hex1/Series/Paytakht/S06/Paytakht.S06E15.HDTV.HexDL.com.mkv' }
+                ],
+                7: [
+                    { title: 'قسمت ۱', url: 'https://s46.namasha.com/videos/dl/7509224301-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۲', url: 'https://s37.namasha.com/videos/dl/7509347953-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۳', url: 'https://s46.namasha.com/videos/dl/7509522361-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۴', url: 'https://s21.namasha.com/videos/dl/7509677311-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۵', url: 'https://s18.namasha.com/videos/dl/7509904943-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۶', url: 'https://s46.namasha.com/videos/dl/7510079351-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۷', url: 'https://s16.namasha.com/videos/dl/7510273117-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۸', url: 'https://s46.namasha.com/videos/dl/7510434187-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۹', url: 'https://s32.namasha.com/videos/dl/7510565913-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۰', url: 'https://s23.namasha.com/videos/dl/7510729244-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۱', url: 'https://s30.namasha.com/videos/dl/7510881177-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۲', url: 'https://s32.namasha.com/videos/dl/7511267953-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۳', url: 'https://s46.namasha.com/videos/dl/7511406127-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۴', url: 'https://s18.namasha.com/videos/dl/7511592040-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۵', url: 'https://s22.namasha.com/videos/dl/7511797953-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۶', url: 'https://s45.namasha.com/videos/dl/7511990749-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۷', url: 'https://s47.namasha.com/videos/dl/7512159244-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۸', url: 'https://s47.namasha.com/videos/dl/7512585799-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۱۹', url: 'https://s47.namasha.com/videos/dl/7512774622-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۲۰', url: 'https://s45.namasha.com/videos/dl/7512975157-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۲۱', url: 'https://s47.namasha.com/videos/dl/7513151070-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت ۲۲', url: 'https://s46.namasha.com/videos/dl/7513317197-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' },
+                    { title: 'قسمت پایانی ۲۳', url: 'https://s46.namasha.com/videos/dl/7513317197-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-480p.mp4' }
+                ],
+                special: [
+                    { title: 'پشت صحنه', url: 'https://s47.namasha.com/videos/dl/7517026448-480p/%D8%B3%D8%B1%DB%8C%D8%A7%D9%84-%D9%BE%D8%A7%DB%8C%D8%AA%D8%AE%D8%AA-7-480p.mp4' }
+                ]
+            };
+
+            let currentSeason = 1;
+            let currentEpisodeIndex = 0;
+            let currentEpisodes = [];
+
+            window.loadEpisodes = function(season) {
+                const list = document.getElementById('episodeList');
+                const wrapper = document.getElementById('videoWrapper');
+                wrapper.style.display = 'none';
+                list.innerHTML = '';
+                const eps = episodesData[season];
+                if (!eps) return;
+                currentSeason = season;
+                currentEpisodes = eps;
+                currentEpisodeIndex = 0;
+                eps.forEach((ep, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'episode-item';
+                    div.innerHTML = `<i class="fas fa-play"></i> ${ep.title}`;
+                    div.addEventListener('click', function() { playEpisode(season, index); });
+                    list.appendChild(div);
+                });
+            };
+
+            function playEpisode(season, index) {
+                const eps = episodesData[season];
+                if (!eps || !eps[index]) return;
+                const ep = eps[index];
+                const player = document.getElementById('moviePlayer');
+                const wrapper = document.getElementById('videoWrapper');
+                const seasonLabel = document.getElementById('seasonLabel');
+                const episodeLabel = document.getElementById('episodeLabel');
+                seasonLabel.textContent = 'فصل ' + season;
+                episodeLabel.textContent = ep.title;
+                player.src = ep.url;
+                wrapper.style.display = 'block';
+                player.play();
+                currentSeason = season;
+                currentEpisodeIndex = index;
+                currentEpisodes = eps;
+            }
+
+            window.nextEpisode = function() {
+                if (!currentEpisodes || currentEpisodeIndex >= currentEpisodes.length - 1) {
+                    alert('آخرین قسمت است!');
+                    return;
+                }
+                const nextIndex = currentEpisodeIndex + 1;
+                playEpisode(currentSeason, nextIndex);
+            };
+
+            window.skipIntro = function() {
+                const player = document.getElementById('moviePlayer');
+                if (player) player.currentTime = Math.min(player.currentTime + 30, player.duration || 0);
+            };
+
+            window.addEventListener('load', function() { loadEpisodes(1); });
+
+            // ===== FEATURE DETAILS =====
+            window.toggleFeature = function(id) {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('show');
+            };
+
+            // ===== FAQ =====
+            window.toggleFAQ = function(el) {
+                const answer = el.parentElement.querySelector('.a');
+                const icon = el.querySelector('i');
+                if (answer) { answer.classList.toggle('show');
+                    el.classList.toggle('open'); }
+            };
+
+            // ===== SEARCH =====
+            document.getElementById('globalSearch').addEventListener('input', function(e) {
+                const q = e.target.value.trim().toLowerCase();
+                const items = document.querySelectorAll('.page .card p, .page .card h3, .page .card li, .page .card code, .page .card .feature-tag');
+                if (q.length < 2) {
+                    items.forEach(el => { el.style.backgroundColor = 'transparent';
+                        el.style.padding = '0'; });
+                    return;
+                }
+                let found = false;
+                items.forEach(el => {
+                    const txt = el.textContent.toLowerCase();
+                    if (txt.includes(q)) {
+                        el.style.backgroundColor = 'rgba(42,109,244,0.12)';
+                        el.style.borderRadius = '6px';
+                        el.style.padding = '2px 6px';
+                        found = true;
+                    } else {
+                        el.style.backgroundColor = 'transparent';
+                        el.style.padding = '0';
+                    }
+                });
+                if (!found) alert('🔍 نتیجه‌ای یافت نشد!');
+            });
+
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebarFn(); });
+            console.log('✅ IndexMan Bot UI — نسخه نهایی با BrsApi و پخش زنده به‌زودی');
+        })();
+    </script>
+</body>
+</html>
